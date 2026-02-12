@@ -26,3 +26,7 @@ models/*.pth
 predictions_output/
 chest_xray/
 Data_sample/
+
+# Web app runtime files
+uploads/*
+!uploads/.gitkeep
