@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 198 70% 12%;
+    --border: 198 20% 88%;
+    --muted: 198 20% 93%;
+    --muted-foreground: 198 25% 40%;
+    --accent: 180 65% 45%;
+    --accent-foreground: 0 0% 100%;
+    --primary: 180 70% 42%;
+    --primary-foreground: 0 0% 100%;
+    --medical: 160 75% 45%;
+    --warning: 38 92% 50%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 200 30% 6%;
+    --foreground: 180 20% 96%;
+    --border: 198 25% 15%;
+    --muted: 198 25% 12%;
+    --muted-foreground: 198 15% 60%;
+    --accent: 180 60% 35%;
+    --accent-foreground: 180 20% 96%;
+    --primary: 180 65% 45%;
+    --primary-foreground: 200 30% 6%;
+    --medical: 160 70% 50%;
+    --warning: 38 92% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "ss02", "cv11";
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  .contain-strict {
+    contain: strict;
+  }
+  
+  .inset-shadow-2xs {
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  
+  .inset-shadow-white\/20 {
+    box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  .blur-xs {
+    filter: blur(2px);
+  }
+  
+  .h-10\.5 {
+    height: 2.625rem;
+  }
+
+  /* Custom animations */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-from-bottom-4 {
+    from {
+      transform: translateY(1rem);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .animate-in {
+    animation-fill-mode: both;
+  }
+
+  .fade-in {
+    animation-name: fade-in;
+  }
+
+  .slide-in-from-bottom-4 {
+    animation-name: slide-in-from-bottom-4;
+  }
+
+  .duration-500 {
+    animation-duration: 500ms;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.3);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5);
+}
+

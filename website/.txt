@@ -1,0 +1,87 @@
+PNEUMONIA DETECTION USING CHEST X-RAY IMAGES
+======================================================================
+
+[STEP 1] Initializing dataset paths and transforms...
+Base dataset path: /Users/yashwanthkrishna/Desktop/major project/chest_xray
+Setting up data augmentation transforms...
+Transforms configured successfully!
+
+[STEP 2] Loading datasets...
+Loading train dataset from: /Users/yashwanthkrishna/Desktop/major project/chest_xray/train
+  -> Loaded 2624 images from train
+Loading val dataset from: /Users/yashwanthkrishna/Desktop/major project/chest_xray/val
+  -> Loaded 226 images from val
+Loading test dataset from: /Users/yashwanthkrishna/Desktop/major project/chest_xray/test
+  -> Loaded 228 images from test
+
+Dataset classes found: ['NORMAL', 'PNEUMONIA']
+
+Dataset sizes:
+  train: 2624 images
+  val: 226 images
+  test: 228 images
+
+[STEP 3] Setting up device and data loaders...
+Using device: cpu
+Creating data loaders...
+Data loaders created for: ['train', 'val', 'test']
+  train: 82 batches (batch size: 32)
+  val: 8 batches (batch size: 32)
+  test: 8 batches (batch size: 32)
+
+[STEP 4] Setting up model...
+
+[INFO] No existing model found. Training new model...
+Model will be saved to: /Users/yashwanthkrishna/Desktop/major project/models/best_pneumonia_model.pth
+Number of classes: 2
+Initializing ResNet-152 model with pretrained weights...
+Model architecture created successfully!
+
+Moving model to cpu...
+Optimizer: Adam (lr=0.001)
+Loss function: NLLLoss
+
+Starting training for 1 epoch(s)...
+
+============================================================
+EPOCH 1/1
+============================================================
+/Users/yashwanthkrishna/Desktop/major project/venv/lib/python3.13/site-packages/torch/optim/lr_scheduler.py:192: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  warnings.warn(
+
+[TRAINING PHASE]
+  Batch 10/82 - Loss: 0.2196 - Progress: 12.2%
+  Batch 20/82 - Loss: 0.2277 - Progress: 24.4%
+  Batch 30/82 - Loss: 0.1196 - Progress: 36.6%
+  Batch 40/82 - Loss: 0.3018 - Progress: 48.8%
+  Batch 50/82 - Loss: 0.0176 - Progress: 61.0%
+  Batch 60/82 - Loss: 0.0786 - Progress: 73.2%
+  Batch 70/82 - Loss: 0.0311 - Progress: 85.4%
+  Batch 80/82 - Loss: 0.3639 - Progress: 97.6%
+  Batch 82/82 - Loss: 0.0976 - Progress: 100.0%
+
+TRAIN Results:
+  Loss: 0.1449
+  Accuracy: 0.9619 (96.19%)
+  Correct: 2524/2624
+
+[VALIDATION PHASE]
+  Batch 8/8 - Loss: 0.0851 - Progress: 100.0%
+
+VAL Results:
+  Loss: 0.1443
+  Accuracy: 0.9513 (95.13%)
+  Correct: 215/226
+  -> New best validation accuracy! Saving model weights...
+
+============================================================
+Training completed!
+Total time: 14m 10s
+Best validation accuracy: 0.9513 (95.13%)
+============================================================
+
+[STEP 5] Saving trained model...
+✓ Model saved successfully to /Users/yashwanthkrishna/Desktop/major project/models/best_pneumonia_model.pth
+
+[STEP 6] Evaluating model accuracy...
+Model set to evaluation mode
