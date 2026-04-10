@@ -22,7 +22,6 @@ env/
 .env.*
 
 # Project data/artifacts
-models/*.pth
 predictions_output/
 chest_xray/
 Data_sample/
