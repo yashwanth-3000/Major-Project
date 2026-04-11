@@ -57,34 +57,11 @@ const reportSuggestions = [
     },
 ]
 
-const generalSuggestions = [
-    {
-        icon: <HeartPulse className="w-5 h-5" />,
-        label: 'Boost my immunity',
-        prompt: 'What are the best ways to naturally strengthen my immune system?',
-    },
-    {
-        icon: <Activity className="w-5 h-5" />,
-        label: 'Manage a cold or flu',
-        prompt: 'I have a cold with a sore throat and mild fever. What should I do to recover faster?',
-    },
-    {
-        icon: <ShieldCheck className="w-5 h-5" />,
-        label: 'Prevention for elderly',
-        prompt: 'What are the best ways to prevent respiratory infections for elderly family members?',
-    },
-    {
-        icon: <Microscope className="w-5 h-5" />,
-        label: 'Healthy lifestyle tips',
-        prompt: 'What daily habits can I adopt to improve my overall health and wellness?',
-    },
-]
-
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://pneumoai-api-production.up.railway.app'
 
 export default function ChatPage() {
     const { theme, toggleTheme, mounted } = useTheme()
-    const [chatMode, setChatMode] = useState<ChatMode>('general')
+    const [chatMode, setChatMode] = useState<ChatMode>('report')
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
     const [isUploading, setIsUploading] = useState(false)
@@ -172,7 +149,7 @@ export default function ChatPage() {
         }
     }
 
-    const activeSuggestions = chatMode === 'report' ? reportSuggestions : generalSuggestions
+    const activeSuggestions = chatMode === 'report' ? reportSuggestions : []
 
     const handleSuggestionClick = (suggestion: (typeof reportSuggestions)[number]) => {
         handleSend(suggestion.prompt)
@@ -376,12 +353,14 @@ export default function ChatPage() {
                                     How can I help you today?
                                 </h2>
                                 <p className="text-muted-foreground text-xs sm:text-base font-light leading-relaxed max-w-lg mx-auto px-2 sm:px-0">
-                                    I can analyze medical X-ray reports, explain pneumonia detection
-                                    results, or answer general health questions.
+                                    {chatMode === 'report'
+                                        ? 'Upload a chest X-ray or ask about your report and pneumonia detection results.'
+                                        : 'Ask about symptoms, prevention, or general wellness — type your question below.'}
                                 </p>
                             </div>
 
-                            {/* Suggestion Cards */}
+                            {/* Suggestion cards (report mode only — X-ray / pneumonia focused) */}
+                            {activeSuggestions.length > 0 && (
                             <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-2xl">
                                 {activeSuggestions.map((suggestion, index) => (
                                     <button
@@ -405,6 +384,7 @@ export default function ChatPage() {
                                     </button>
                                 ))}
                             </div>
+                            )}
                         </div>
                     ) : (
                         /* Messages */
