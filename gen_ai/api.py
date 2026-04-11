@@ -173,7 +173,7 @@ async def analyze_xray(file: UploadFile = File(...)):
         ml_class = ml_result["classification"] if ml_result else None
 
         if vision_result:
-            parts.append("=== AI VISION ANALYSIS (GPT-4o) — PRIMARY SOURCE (65-70% weight) ===")
+            parts.append("=== AI VISION ANALYSIS (o3) — PRIMARY SOURCE (65-70% weight) ===")
             parts.append(vision_text)
             parts.append("")
 
