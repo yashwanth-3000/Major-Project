@@ -186,52 +186,50 @@ async def analyze_xray(file: UploadFile = File(...)):
                 parts.append(f"  - {region}: {pct}%")
             parts.append("")
 
-        vision_says_normal = vision_text and any(
-            phrase in vision_text.lower()
-            for phrase in [
-                "no significant abnormalities",
-                "lungs appear clear",
-                "normal lung",
-                "no consolidation",
-                "no opacity",
-                "clear lung fields",
-                "no acute",
-                "unremarkable",
-                "within normal limits",
-                "severity: normal",
-                "severity assessment: normal",
-            ]
-        )
+        vision_verdict = "unknown"
+        if vision_text:
+            vt_lower = vision_text.lower()
+            if "verdict: normal" in vt_lower:
+                vision_verdict = "normal"
+            elif "verdict: abnormal" in vt_lower:
+                vision_verdict = "abnormal"
 
-        if vision_says_normal and ml_class == "NORMAL":
+        if vision_verdict == "normal" and ml_class == "NORMAL":
             parts.append(
-                "IMPORTANT: Both the AI Vision analysis AND the ML model indicate "
-                "this X-ray appears NORMAL with no significant findings. "
-                "Your response MUST clearly state that the lungs appear normal "
-                "and healthy. Do NOT fabricate or suggest any abnormalities. "
-                "Provide reassurance while still recommending routine check-ups. "
+                "IMPORTANT: Both the AI Vision analysis AND the ML model agree "
+                "this X-ray appears NORMAL. Your response MUST clearly state "
+                "that the lungs appear normal and healthy. Do NOT fabricate or "
+                "suggest any abnormalities. Provide reassurance while still "
+                "recommending routine check-ups. "
                 "NEVER include any numerical confidence scores or percentages."
             )
-        elif vision_says_normal and ml_class == "PNEUMONIA":
+        elif vision_verdict == "normal" and ml_class == "PNEUMONIA":
             parts.append(
-                "IMPORTANT: The AI Vision analysis (PRIMARY source, 65-70% weight) "
-                "indicates this X-ray appears NORMAL, but the ML model flagged it "
-                "as PNEUMONIA. Since the Vision AI is the primary and more reliable "
-                "source, TRUST THE VISION ANALYSIS. The ML model can produce "
-                "false positives. Your response should indicate the X-ray appears "
-                "largely normal, note the minor ML flag as something to discuss "
-                "with a doctor if concerned, but do NOT alarm the patient. "
+                "NOTE: The AI Vision analysis (PRIMARY, 65-70% weight) says "
+                "NORMAL, but the ML model flagged PNEUMONIA. Since Vision AI is "
+                "the primary source, lean toward normal but mention the ML "
+                "discrepancy as something to discuss with a doctor. Do NOT "
+                "alarm the patient. "
+                "NEVER include any numerical confidence scores or percentages."
+            )
+        elif vision_verdict == "abnormal" and ml_class == "NORMAL":
+            parts.append(
+                "NOTE: The AI Vision analysis (PRIMARY, 65-70% weight) found "
+                "abnormalities, but the ML model classified this as NORMAL. "
+                "Since Vision AI is the primary source, report the findings "
+                "the Vision AI identified. The ML model may have missed subtle "
+                "signs. Recommend medical follow-up. "
                 "NEVER include any numerical confidence scores or percentages."
             )
         else:
             parts.append(
-                "Synthesize BOTH analyses with Vision AI as the primary source. "
-                "If the Vision AI says the X-ray is normal, TRUST THAT — even if "
-                "the ML model disagrees. Only report genuine abnormalities that "
-                "the Vision AI has identified. "
-                "Identify final hotspot regions, where they agree/disagree, "
-                "blind spots, overall severity, and a patient-friendly explanation. "
-                "NEVER include any numerical confidence scores or percentages in the output."
+                "Synthesize BOTH analyses with Vision AI as the primary source "
+                "(65-70% weight). Report what the Vision AI genuinely found. "
+                "If it found abnormalities, describe them clearly. If it found "
+                "nothing, say so. Identify final hotspot regions, where they "
+                "agree/disagree, blind spots, overall severity, and a "
+                "patient-friendly explanation. "
+                "NEVER include any numerical confidence scores or percentages."
             )
 
         combined_query = "\n".join(parts)

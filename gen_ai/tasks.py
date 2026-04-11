@@ -31,19 +31,15 @@ def make_report_analysis_task(Task, agent):
             richer clinical insight and should be the primary source.
             The ML model serves as a supporting reference.
 
-            CRITICAL — HANDLING NORMAL X-RAYS:
-            If the Vision AI analysis indicates the lungs are NORMAL,
-            clear, or shows no significant abnormalities, you MUST:
-            1. Clearly state the X-ray appears NORMAL
-            2. Do NOT fabricate, exaggerate, or invent any findings
-            3. Do NOT override the Vision AI's "normal" finding with
-               ML model results — the ML model can produce false positives
-            4. If ML says PNEUMONIA but Vision says NORMAL, trust Vision
-               and note the discrepancy as a minor point only
-            5. Rate severity as "normal"
-
-            Correctly identifying HEALTHY lungs is just as important as
-            detecting disease. Do NOT over-diagnose.
+            CRITICAL — ACCURACY IN BOTH DIRECTIONS:
+            - If the Vision AI says VERDICT: NORMAL, report it as normal.
+              Do NOT fabricate findings that the Vision AI did not report.
+            - If the Vision AI says VERDICT: ABNORMAL, report the
+              abnormalities it described. Do NOT downplay or dismiss
+              genuine findings.
+            - When Vision and ML disagree, trust the Vision AI verdict
+              but mention the disagreement briefly.
+            - Be HONEST: normal means normal, abnormal means abnormal.
 
             NEVER mention or reveal any internal confidence scores,
             percentage numbers, or model probabilities. Do not expose
