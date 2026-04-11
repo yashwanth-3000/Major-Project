@@ -252,7 +252,7 @@ if os.path.exists(model_save_path):
     except Exception as e:
         print(f"⚠ Warning: Failed to load full state_dict: {e}")
         print("Training new model instead...")
-        model_ft = model.fit(dataloaders, num_epochs=1, device=device)
+        model_ft = model.fit(dataloaders, num_epochs=20, device=device)
         torch.save(model_ft.model.state_dict(), model_save_path)
         print(f'✓ New model saved to {model_save_path}')
 else:
@@ -265,7 +265,7 @@ else:
     model = Model(num_classes=num_classes)
     print("Model architecture created successfully!")
     
-    model_ft = model.fit(dataloaders, num_epochs=1, device=device)  # model_ft is now the Model instance
+    model_ft = model.fit(dataloaders, num_epochs=20, device=device)
 
     # Save the trained model
     print(f"\n[STEP 5] Saving trained model...")

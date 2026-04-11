@@ -52,8 +52,8 @@ const reportSuggestions = [
     },
     {
         icon: <HeartPulse className="w-5 h-5" />,
-        label: 'Detection confidence score',
-        prompt: 'How does the AI detection confidence score work? What does 92% confidence mean for my diagnosis?',
+        label: 'How reliable is AI detection?',
+        prompt: 'How reliable is the AI-powered pneumonia detection? How does the dual analysis with Vision AI and ML model work together?',
     },
 ]
 
@@ -124,9 +124,15 @@ export default function ChatPage() {
             mode: selectedMode,
         }
 
-        setMessages((prev) => [...prev, userMessage])
+        const currentMessages = [...messages, userMessage]
+        setMessages(currentMessages)
         setInput('')
         setIsTyping(true)
+
+        const history = messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+        }))
 
         try {
             const res = await fetch(`${API_BASE}/chat`, {
@@ -135,6 +141,7 @@ export default function ChatPage() {
                 body: JSON.stringify({
                     message: messageText,
                     mode: selectedMode,
+                    history,
                 }),
             })
 

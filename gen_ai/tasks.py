@@ -21,19 +21,30 @@ def make_report_analysis_task(Task, agent):
             {query}
 
             The input may contain DUAL ANALYSIS RESULTS from:
-            - ML Model (ResNet-152 + Grad-CAM): classification, confidence,
-              per-region hotspot activation percentages
             - AI Vision (GPT-4o): radiological findings, blind spots
+            - ML Model (ResNet-152 + Grad-CAM): classification,
+              per-region hotspot activation percentages
+
+            IMPORTANT WEIGHTING:
+            Give 65-70% weight to the AI Vision analysis and 30-35%
+            weight to the ML model results. The Vision AI provides
+            richer clinical insight and should be the primary source.
+            The ML model serves as a supporting reference.
+
+            NEVER mention or reveal any internal confidence scores,
+            percentage numbers, or model probabilities. Do not expose
+            any technical metrics to the patient.
 
             When dual analysis is present, provide:
-            - Where the ML model and Vision AI AGREE on findings
-            - Where they DISAGREE or found different things
+            - Primary findings from Vision AI analysis
+            - Supporting evidence from ML hotspot regions
+            - Where Vision AI and ML model agree or disagree
             - Blind spots one caught but the other missed
             - Final hotspot assessment combining both sources
-            - Overall severity rating
+            - Overall severity rating (normal / mild / moderate / severe)
 
             For regular text queries, provide:
-            - Classification result and confidence interpretation
+            - Clinical interpretation of findings
             - Grad-CAM hotspot meaning (which lung regions, significance)
             - Reliability assessment of the AI detection
 
@@ -43,8 +54,8 @@ def make_report_analysis_task(Task, agent):
             Keep your analysis under 250 words.
         """).strip(),
         expected_output=(
-            "A concise medical analysis synthesizing ML hotspots and "
-            "Vision findings into a unified assessment."
+            "A concise medical analysis led by Vision AI findings, "
+            "supported by ML hotspots, with no internal scores exposed."
         ),
         agent=agent,
     )
@@ -55,20 +66,26 @@ def make_report_compose_task(Task, agent, analysis_task):
     return Task(
         description=dedent("""
             Turn the analysis into a patient-friendly explanation:
-            - **Summary**: What was detected, confidence, and severity
+            - **Summary**: What was detected and severity level
             - **Hotspot Regions**: Which lung areas are affected and why,
-              noting where ML model and Vision AI agree
+              noting where Vision AI and ML model agree
             - **Blind Spots**: Anything the Vision AI caught that the ML
               model missed (or vice versa)
             - **Reliability**: How trustworthy the combined result is
             - **Next Steps**: What the patient should do
             - **Disclaimer**: AI analysis is not a substitute for a doctor
 
+            CRITICAL: Never include any numerical confidence scores,
+            percentages, probability values, or internal model metrics.
+            Use qualitative terms only (e.g., "strong indication",
+            "mild signs", "moderate findings").
+
             Total response under 350 words. Be empathetic and clear.
         """).strip(),
         expected_output=(
             "A patient-friendly report with summary, hotspot regions, "
-            "blind spots, reliability, next steps, and disclaimer."
+            "blind spots, reliability, next steps, and disclaimer. "
+            "No numerical confidence values anywhere."
         ),
         agent=agent,
         context=[analysis_task],

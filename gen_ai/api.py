@@ -64,6 +64,11 @@ app.add_middleware(
 # Schemas
 # ------------------------------------------------------------------
 
+class HistoryItem(BaseModel):
+    role: str = Field(..., description="'user' or 'assistant'")
+    content: str = Field(..., description="Message content")
+
+
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, description="User message or pasted report.")
     mode: str = Field(
@@ -72,6 +77,10 @@ class ChatRequest(BaseModel):
             "Workflow mode: 'report' for X-ray / report analysis, "
             "'general' for health questions, '' for auto-detect."
         ),
+    )
+    history: list[HistoryItem] = Field(
+        default_factory=list,
+        description="Previous messages in this chat session for context.",
     )
 
 
@@ -84,15 +93,31 @@ class ChatResponse(BaseModel):
 # Endpoints
 # ------------------------------------------------------------------
 
+def _build_contextual_query(message: str, history: list[HistoryItem]) -> str:
+    """Prepend conversation history to the current message so agents have context."""
+    if not history:
+        return message
+
+    recent = history[-10:]
+    lines = ["CONVERSATION HISTORY (for context):"]
+    for item in recent:
+        prefix = "User" if item.role == "user" else "Assistant"
+        lines.append(f"{prefix}: {item.content[:500]}")
+    lines.append("")
+    lines.append(f"CURRENT MESSAGE:\n{message}")
+    return "\n".join(lines)
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """Process a chat message through the PneumoAI workflow."""
     try:
         from .flow import run_flow_async
 
+        query = _build_contextual_query(request.message, request.history)
         model_name = os.getenv("OPENAI_MODEL", DEFAULT_MODEL)
         result = await run_flow_async(
-            query=request.message,
+            query=query,
             mode=request.mode,
             model_name=model_name,
         )
@@ -113,7 +138,6 @@ async def chat(request: ChatRequest):
 
 class XrayResponse(BaseModel):
     ml_classification: str | None = None
-    ml_confidence: float | None = None
     ml_hotspot_regions: dict | None = None
     ml_hotspot_description: str | None = None
     vision_analysis: str | None = None
@@ -143,28 +167,27 @@ async def analyze_xray(file: UploadFile = File(...)):
         else:
             vision_result = await analyze_xray_with_vision(image_b64)
 
-        # Build the combined query for CrewAI synthesis
         parts: list[str] = ["DUAL ANALYSIS RESULTS FOR CHEST X-RAY:", ""]
 
+        if vision_result:
+            parts.append("=== AI VISION ANALYSIS (GPT-4o) — PRIMARY SOURCE (65-70% weight) ===")
+            parts.append(vision_result["analysis"])
+            parts.append("")
+
         if ml_result:
-            parts.append("=== ML MODEL ANALYSIS (ResNet-152 + Grad-CAM) ===")
+            parts.append("=== ML MODEL ANALYSIS (ResNet-152 + Grad-CAM) — SUPPORTING (30-35% weight) ===")
             parts.append(f"Classification: {ml_result['classification']}")
-            parts.append(f"Confidence: {ml_result['confidence']}%")
             parts.append(ml_result["hotspot_description"])
             parts.append("Regional activation breakdown:")
             for region, pct in ml_result["hotspot_regions"].items():
                 parts.append(f"  - {region}: {pct}%")
             parts.append("")
 
-        if vision_result:
-            parts.append("=== AI VISION ANALYSIS (GPT-4o) ===")
-            parts.append(vision_result["analysis"])
-            parts.append("")
-
         parts.append(
-            "Synthesize BOTH analyses: identify final hotspot regions, "
-            "where they agree/disagree, blind spots one caught but the "
-            "other missed, overall severity, and a patient-friendly explanation."
+            "Synthesize BOTH analyses with Vision AI as the primary source. "
+            "Identify final hotspot regions, where they agree/disagree, "
+            "blind spots, overall severity, and a patient-friendly explanation. "
+            "NEVER include any numerical confidence scores or percentages in the output."
         )
 
         combined_query = "\n".join(parts)
@@ -178,7 +201,6 @@ async def analyze_xray(file: UploadFile = File(...)):
 
         return XrayResponse(
             ml_classification=ml_result["classification"] if ml_result else None,
-            ml_confidence=ml_result["confidence"] if ml_result else None,
             ml_hotspot_regions=ml_result["hotspot_regions"] if ml_result else None,
             ml_hotspot_description=ml_result["hotspot_description"] if ml_result else None,
             vision_analysis=(vision_result["analysis"][:600] if vision_result else None),
