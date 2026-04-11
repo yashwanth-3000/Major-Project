@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import sys
 
-DEFAULT_MODEL = "openai/gpt-4o-mini"
+DEFAULT_MODEL = "openai/o4-mini"
 
 
 def require_api_keys() -> None:

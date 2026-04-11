@@ -1,10 +1,16 @@
-"""OpenAI GPT-4o Vision wrapper for chest X-ray radiological analysis."""
+"""OpenAI o3 Vision wrapper for chest X-ray radiological analysis.
+
+Uses the o3 reasoning model which integrates images directly into its
+chain of thought for deeper, more accurate medical image understanding.
+"""
 
 from __future__ import annotations
 
 import os
 
 from openai import AsyncOpenAI
+
+_VISION_MODEL = os.getenv("VISION_MODEL", "o3")
 
 _SYSTEM = (
     "You are an expert radiologist AI assistant. Your duty is diagnostic "
@@ -34,16 +40,19 @@ _SYSTEM = (
 
 
 async def analyze_xray_with_vision(image_base64: str) -> dict:
-    """Send a chest X-ray to GPT-4o Vision and return radiological analysis.
+    """Send a chest X-ray to the o3 reasoning model for radiological analysis.
+
+    o3 integrates images directly into its chain of thought, producing
+    deeper and more accurate analysis than standard vision models.
 
     Returns ``{"analysis": str}``.
     """
     client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     resp = await client.chat.completions.create(
-        model="gpt-4o",
+        model=_VISION_MODEL,
         messages=[
-            {"role": "system", "content": _SYSTEM},
+            {"role": "developer", "content": _SYSTEM},
             {
                 "role": "user",
                 "content": [
@@ -68,8 +77,7 @@ async def analyze_xray_with_vision(image_base64: str) -> dict:
                 ],
             },
         ],
-        max_tokens=800,
-        temperature=0.3,
+        max_completion_tokens=2000,
     )
 
     return {"analysis": resp.choices[0].message.content}
