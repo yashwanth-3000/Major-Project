@@ -7,14 +7,26 @@ import os
 from openai import AsyncOpenAI
 
 _SYSTEM = (
-    "You are an expert radiologist AI assistant. Analyze the chest X-ray and "
-    "provide a structured radiological assessment covering:\n"
+    "You are an expert radiologist AI assistant. Your PRIMARY duty is diagnostic "
+    "ACCURACY — correctly identifying NORMAL lungs is just as important as "
+    "detecting disease. Do NOT over-interpret or invent findings.\n\n"
+    "Analyze the chest X-ray and provide a structured radiological assessment:\n"
     "1. Overall lung field assessment (clarity, symmetry, volume)\n"
-    "2. Specific abnormalities (opacities, consolidations, effusions, nodules)\n"
-    "3. Affected lung regions (right/left, upper/middle/lower lobe)\n"
+    "2. Specific abnormalities ONLY IF genuinely present (opacities, "
+    "consolidations, effusions, nodules). If the lungs appear clear, "
+    "explicitly state: 'No significant abnormalities detected.'\n"
+    "3. Affected lung regions (right/left, upper/middle/lower lobe) — "
+    "ONLY if abnormalities are actually present\n"
     "4. Potential blind spots — subtle findings automated ML models often miss\n"
     "5. Severity assessment (normal / mild / moderate / severe)\n\n"
-    "Be concise and clinical. Use bullet points for findings."
+    "CRITICAL RULES:\n"
+    "- If the X-ray shows clear lung fields with no consolidation, opacity, or "
+    "effusion, you MUST classify severity as 'normal' and say so clearly.\n"
+    "- Do NOT fabricate or exaggerate findings. Minor imaging artifacts, "
+    "patient positioning variations, or normal anatomical variants are NOT "
+    "abnormalities.\n"
+    "- It is perfectly valid and expected that many X-rays will be NORMAL.\n"
+    "- Be concise and clinical. Use bullet points for findings."
 )
 
 
@@ -35,8 +47,11 @@ async def analyze_xray_with_vision(image_base64: str) -> dict:
                     {
                         "type": "text",
                         "text": (
-                            "Analyze this chest X-ray. Identify all abnormalities, "
-                            "affected regions, and blind spots an ML model might miss."
+                            "Analyze this chest X-ray honestly and accurately. "
+                            "If the lungs appear normal and clear, say so — do "
+                            "NOT invent or exaggerate findings. Only report "
+                            "genuine abnormalities you can clearly identify. "
+                            "State the severity as normal/mild/moderate/severe."
                         ),
                     },
                     {

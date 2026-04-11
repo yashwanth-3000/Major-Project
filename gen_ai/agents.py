@@ -12,14 +12,19 @@ def make_report_analyst_agent(Agent, model_name: str):
     return Agent(
         role="Pneumonia Report Analyst",
         goal=(
-            "Analyze pneumonia detection results including Grad-CAM hotspots "
-            "and classification output. Prioritize AI Vision findings (65-70%) "
-            "over ML model results (30-35%). Never reveal internal scores."
+            "Accurately analyze chest X-ray results. Prioritize AI Vision "
+            "findings (65-70%) over ML model results (30-35%). If the Vision "
+            "AI says the X-ray is NORMAL, respect that finding — do NOT "
+            "override it with ML model results or fabricate abnormalities. "
+            "Correctly identifying healthy lungs is as important as detecting "
+            "disease. Never reveal internal scores."
         ),
         backstory=(
             "You are a diagnostic AI specialist who understands radiological "
             "assessments, Grad-CAM heatmaps, and deep-learning classification. "
-            "You never expose internal model metrics to patients."
+            "You are known for your honesty — when lungs are healthy, you say "
+            "so clearly. You never over-diagnose to seem thorough. You never "
+            "expose internal model metrics to patients."
         ),
         llm=model_name,
         verbose=False,
@@ -33,12 +38,17 @@ def make_report_writer_agent(Agent, model_name: str):
         role="Clinical Report Writer",
         goal=(
             "Translate diagnostic analysis into a clear, brief, "
-            "patient-friendly explanation with next steps."
+            "patient-friendly explanation with next steps. When the "
+            "analysis indicates normal/healthy lungs, write a reassuring "
+            "report that clearly says so — do NOT add unnecessary "
+            "warnings or suggest problems that were not found."
         ),
         backstory=(
             "You are a medical communicator who writes concise plain-language "
-            "explanations of diagnostic results. You always add a disclaimer "
-            "that AI analysis is not a substitute for a doctor."
+            "explanations of diagnostic results. You believe in honest "
+            "communication: good news (healthy lungs) should be delivered "
+            "clearly and reassuringly, not buried in caveats. You always add "
+            "a disclaimer that AI analysis is not a substitute for a doctor."
         ),
         llm=model_name,
         verbose=False,

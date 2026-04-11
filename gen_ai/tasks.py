@@ -31,11 +31,25 @@ def make_report_analysis_task(Task, agent):
             richer clinical insight and should be the primary source.
             The ML model serves as a supporting reference.
 
+            CRITICAL — HANDLING NORMAL X-RAYS:
+            If the Vision AI analysis indicates the lungs are NORMAL,
+            clear, or shows no significant abnormalities, you MUST:
+            1. Clearly state the X-ray appears NORMAL
+            2. Do NOT fabricate, exaggerate, or invent any findings
+            3. Do NOT override the Vision AI's "normal" finding with
+               ML model results — the ML model can produce false positives
+            4. If ML says PNEUMONIA but Vision says NORMAL, trust Vision
+               and note the discrepancy as a minor point only
+            5. Rate severity as "normal"
+
+            Correctly identifying HEALTHY lungs is just as important as
+            detecting disease. Do NOT over-diagnose.
+
             NEVER mention or reveal any internal confidence scores,
             percentage numbers, or model probabilities. Do not expose
             any technical metrics to the patient.
 
-            When dual analysis is present, provide:
+            When GENUINE abnormalities are found in dual analysis:
             - Primary findings from Vision AI analysis
             - Supporting evidence from ML hotspot regions
             - Where Vision AI and ML model agree or disagree
@@ -54,7 +68,8 @@ def make_report_analysis_task(Task, agent):
             Keep your analysis under 250 words.
         """).strip(),
         expected_output=(
-            "A concise medical analysis led by Vision AI findings, "
+            "An accurate medical analysis led by Vision AI findings, "
+            "clearly stating NORMAL when appropriate, "
             "supported by ML hotspots, with no internal scores exposed."
         ),
         agent=agent,
@@ -65,7 +80,22 @@ def make_report_compose_task(Task, agent, analysis_task):
     """Write the patient-friendly report."""
     return Task(
         description=dedent("""
-            Turn the analysis into a patient-friendly explanation:
+            Turn the analysis into a patient-friendly explanation.
+
+            FIRST — CHECK IF THE ANALYSIS SAYS NORMAL/HEALTHY:
+            If the previous analysis indicates the X-ray is NORMAL with
+            no significant findings, write a REASSURING report:
+            - **Summary**: The X-ray appears normal, lungs look healthy
+            - **Details**: Briefly note clear lung fields, no concerning
+              areas detected by either AI system
+            - **Next Steps**: Routine check-ups, maintain healthy habits
+            - **Disclaimer**: AI analysis is not a substitute for a doctor
+
+            Do NOT add scary language, unnecessary warnings about
+            "potential" issues, or suggest problems that were not found.
+            Healthy results deserve clear, positive communication.
+
+            IF GENUINE ABNORMALITIES WERE FOUND:
             - **Summary**: What was detected and severity level
             - **Hotspot Regions**: Which lung areas are affected and why,
               noting where Vision AI and ML model agree
@@ -83,8 +113,8 @@ def make_report_compose_task(Task, agent, analysis_task):
             Total response under 350 words. Be empathetic and clear.
         """).strip(),
         expected_output=(
-            "A patient-friendly report with summary, hotspot regions, "
-            "blind spots, reliability, next steps, and disclaimer. "
+            "A patient-friendly report — either reassuring for normal "
+            "results or detailed for abnormal findings. "
             "No numerical confidence values anywhere."
         ),
         agent=agent,
