@@ -19,15 +19,35 @@ try:
     from PIL import Image as PILImage
     from torchvision import models, transforms
 
-    _weights_path = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "models", "best_pneumonia_model.pth"
-    )
-    TORCH_AVAILABLE = os.path.exists(_weights_path)
+    TORCH_AVAILABLE = True
 except ImportError:
     TORCH_AVAILABLE = False
 
+_MODEL_URL = "https://github.com/yashwanth-3000/Major-Project/raw/main/models/best_pneumonia_model.pth"
 _model = None
 _device = None
+
+
+def _weights_path() -> str:
+    return os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "models", "best_pneumonia_model.pth"
+    )
+
+
+def _ensure_weights() -> str:
+    """Return the path to model weights, downloading from GitHub if missing."""
+    path = _weights_path()
+    if os.path.exists(path):
+        return path
+
+    print(f"[ML] Model weights not found locally. Downloading from GitHub...")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    import urllib.request
+    urllib.request.urlretrieve(_MODEL_URL, path)
+    size_mb = os.path.getsize(path) / (1024 * 1024)
+    print(f"[ML] Downloaded model weights ({size_mb:.0f} MB) to {path}")
+    return path
 
 
 # ------------------------------------------------------------------
@@ -53,11 +73,7 @@ def _get_model():
         def forward(self, x):
             return self.model(x)
 
-    weights_path = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "models", "best_pneumonia_model.pth"
-    )
-    if not os.path.exists(weights_path):
-        raise FileNotFoundError(f"Model weights not found at {weights_path}")
+    weights_path = _ensure_weights()
 
     net = _PneumoniaNet()
     state = torch.load(weights_path, map_location=device, weights_only=True)

@@ -209,7 +209,7 @@ export default function ChatPage() {
 
             let header = ''
             if (data.ml_classification) {
-                header = `**ML Classification: ${data.ml_classification} (${data.ml_confidence}% confidence)**\n`
+                header = `**ML Classification: ${data.ml_classification}**\n`
                 if (data.ml_hotspot_description) header += `${data.ml_hotspot_description}\n\n`
             }
 

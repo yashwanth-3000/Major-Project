@@ -1,0 +1,8 @@
+models/*.pth
+chest_xray/
+Data_sample/
+predictions_output/
+venv/
+.venv/
+website/
+.git/
