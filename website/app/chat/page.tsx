@@ -34,7 +34,13 @@ type Message = {
 
 type ChatMode = 'report' | 'general'
 
-const reportSuggestions = [
+type Suggestion = {
+    icon: React.ReactNode
+    label: string
+    prompt: string
+}
+
+const reportSuggestions: Suggestion[] = [
     {
         icon: <Microscope className="w-5 h-5" />,
         label: 'Analyze an X-ray report',
@@ -57,11 +63,34 @@ const reportSuggestions = [
     },
 ]
 
+const generalSuggestions: Suggestion[] = [
+    {
+        icon: <HeartPulse className="w-5 h-5" />,
+        label: 'Spot warning symptoms',
+        prompt: 'I have a cough and fever. What warning signs would mean I should see a doctor urgently?',
+    },
+    {
+        icon: <Stethoscope className="w-5 h-5" />,
+        label: 'Understand chest discomfort',
+        prompt: 'What are common reasons for chest discomfort, and when is it considered an emergency?',
+    },
+    {
+        icon: <ShieldCheck className="w-5 h-5" />,
+        label: 'Prevent respiratory infections',
+        prompt: 'What daily habits can help reduce the risk of respiratory infections like pneumonia or flu?',
+    },
+    {
+        icon: <Activity className="w-5 h-5" />,
+        label: 'Improve breathing health',
+        prompt: 'What practical steps can support better lung and breathing health over time?',
+    },
+]
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://pneumoai-api-production.up.railway.app'
 
 export default function ChatPage() {
     const { theme, toggleTheme, mounted } = useTheme()
-    const [chatMode, setChatMode] = useState<ChatMode>('report')
+    const [chatMode, setChatMode] = useState<ChatMode>('general')
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
     const [isUploading, setIsUploading] = useState(false)
@@ -149,9 +178,9 @@ export default function ChatPage() {
         }
     }
 
-    const activeSuggestions = chatMode === 'report' ? reportSuggestions : []
+    const activeSuggestions = chatMode === 'report' ? reportSuggestions : generalSuggestions
 
-    const handleSuggestionClick = (suggestion: (typeof reportSuggestions)[number]) => {
+    const handleSuggestionClick = (suggestion: Suggestion) => {
         handleSend(suggestion.prompt)
     }
 
@@ -355,35 +384,35 @@ export default function ChatPage() {
                                 <p className="text-muted-foreground text-xs sm:text-base font-light leading-relaxed max-w-lg mx-auto px-2 sm:px-0">
                                     {chatMode === 'report'
                                         ? 'Upload a chest X-ray or ask about your report and pneumonia detection results.'
-                                        : 'Ask about symptoms, prevention, or general wellness — type your question below.'}
+                                        : 'Start with symptoms, prevention, breathing health, or everyday wellness questions.'}
                                 </p>
                             </div>
 
-                            {/* Suggestion cards (report mode only — X-ray / pneumonia focused) */}
+                            {/* Suggestion cards */}
                             {activeSuggestions.length > 0 && (
-                            <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-2xl">
-                                {activeSuggestions.map((suggestion, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => handleSuggestionClick(suggestion)}
-                                        className="group text-left p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-primary/30 transition-all duration-300 hover:shadow-[0_8px_30px_-12px_hsl(var(--primary)/0.15)]"
-                                    >
-                                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-1.5 sm:gap-3">
-                                            <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/15 transition-colors [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5">
-                                                {suggestion.icon}
+                                <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-2xl">
+                                    {activeSuggestions.map((suggestion) => (
+                                        <button
+                                            key={suggestion.label}
+                                            onClick={() => handleSuggestionClick(suggestion)}
+                                            className="group text-left p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-primary/30 transition-all duration-300 hover:shadow-[0_8px_30px_-12px_hsl(var(--primary)/0.15)]"
+                                        >
+                                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-1.5 sm:gap-3">
+                                                <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/15 transition-colors [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5">
+                                                    {suggestion.icon}
+                                                </div>
+                                                <div className="flex-1 min-w-0 text-center sm:text-left">
+                                                    <p className="text-[11px] sm:text-sm font-medium text-foreground mb-0 sm:mb-1 leading-tight">
+                                                        {suggestion.label}
+                                                    </p>
+                                                    <p className="hidden sm:block text-xs text-muted-foreground line-clamp-2 font-light leading-relaxed">
+                                                        {suggestion.prompt}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="flex-1 min-w-0 text-center sm:text-left">
-                                                <p className="text-[11px] sm:text-sm font-medium text-foreground mb-0 sm:mb-1 leading-tight">
-                                                    {suggestion.label}
-                                                </p>
-                                                <p className="hidden sm:block text-xs text-muted-foreground line-clamp-2 font-light leading-relaxed">
-                                                    {suggestion.prompt}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
+                                        </button>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     ) : (
@@ -525,6 +554,7 @@ export default function ChatPage() {
                                 <button
                                     type="button"
                                     onClick={() => { setChatMode('report'); setMessages([]) }}
+                                    aria-label="Read Reports"
                                     aria-pressed={chatMode === 'report'}
                                     className={cn(
                                         'inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-[10px] text-[11px] sm:text-xs font-medium transition-all duration-200',
@@ -540,6 +570,7 @@ export default function ChatPage() {
                                 <button
                                     type="button"
                                     onClick={() => { setChatMode('general'); setMessages([]) }}
+                                    aria-label="General Health"
                                     aria-pressed={chatMode === 'general'}
                                     className={cn(
                                         'inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-[10px] text-[11px] sm:text-xs font-medium transition-all duration-200',

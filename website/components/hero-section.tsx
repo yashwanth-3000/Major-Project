@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { ArrowRight, ChevronRight, Menu, X, Sun, Moon } from 'lucide-react'
+import { ArrowRight, Menu, X, Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { useTheme } from '@/components/theme-provider'
@@ -38,14 +38,31 @@ export function HeroSection() {
                         <div className="mx-auto max-w-7xl px-6">
                             <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                                 <AnimatedGroup variants={transitionVariants}>
+                                    <div className="mx-auto mt-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-medium text-primary md:mt-12">
+                                        AI health assistant for reports, symptoms, and next steps
+                                    </div>
                                     <h1
-                                        className="mt-8 max-w-5xl mx-auto text-balance text-4xl font-bold leading-[1.2] md:text-5xl lg:mt-12 xl:text-6xl">
-                                        AI-Powered Pneumonia Detection
+                                        className="mt-6 max-w-5xl mx-auto text-balance text-4xl font-bold leading-[1.2] md:text-5xl xl:text-6xl">
+                                        Understand chest X-rays and health questions in plain language
                                     </h1>
                                     <p
                                         className="mx-auto mt-6 max-w-3xl text-balance text-base md:text-lg leading-relaxed text-muted-foreground font-light">
-                                        Enhance diagnostic interpretability with GenAI and ResNet-152. Advanced deep learning for accurate pneumonia detection with explainable AI for clinical decision support.
+                                        PneumoAI turns pneumonia screening outputs, Grad-CAM hotspots, and everyday health concerns into clear guidance you can act on. Start with a general health question, or switch to report mode for X-ray-focused explanations.
                                     </p>
+                                    <div className="mx-auto mt-6 grid max-w-3xl grid-cols-1 gap-3 text-left sm:grid-cols-3">
+                                        <div className="rounded-lg border border-border/70 bg-muted/20 p-4">
+                                            <div className="text-lg font-semibold text-foreground">General first</div>
+                                            <div className="mt-1 text-sm text-muted-foreground font-light">Ask symptoms, prevention, and wellness questions right away.</div>
+                                        </div>
+                                        <div className="rounded-lg border border-border/70 bg-muted/20 p-4">
+                                            <div className="text-lg font-semibold text-foreground">Report ready</div>
+                                            <div className="mt-1 text-sm text-muted-foreground font-light">Explain X-ray findings, AI outputs, and hotspot regions.</div>
+                                        </div>
+                                        <div className="rounded-lg border border-border/70 bg-muted/20 p-4">
+                                            <div className="text-lg font-semibold text-foreground">95.13%</div>
+                                            <div className="mt-1 text-sm text-muted-foreground font-light">Validation accuracy from the research model.</div>
+                                        </div>
+                                    </div>
                                 </AnimatedGroup>
 
                                 <AnimatedGroup
@@ -66,7 +83,10 @@ export function HeroSection() {
                                         size="lg"
                                         className="rounded-xl px-6 bg-primary hover:bg-primary/90 font-medium">
                                         <Link href="/chat">
-                                            <span className="text-nowrap">Try Diagnostic AI</span>
+                                            <span className="text-nowrap inline-flex items-center gap-2">
+                                                Ask a Health Question
+                                                <ArrowRight className="h-4 w-4" />
+                                            </span>
                                         </Link>
                                     </Button>
                                     <Button
@@ -75,7 +95,7 @@ export function HeroSection() {
                                         variant="outline"
                                         className="rounded-xl px-6 border-primary/30 hover:bg-primary/10">
                                         <Link href="#features">
-                                            <span className="text-nowrap">View Features</span>
+                                            <span className="text-nowrap">See What It Can Do</span>
                                         </Link>
                                     </Button>
                                 </AnimatedGroup>
@@ -168,25 +188,25 @@ export function HeroSection() {
                 <section className="bg-background pb-16 pt-16 md:pb-24" id="features">
                     <div className="m-auto max-w-6xl px-6">
                         <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-4xl font-bold mb-3">Key Achievements</h2>
-                            <p className="text-muted-foreground text-base font-light">Proven results in medical image analysis</p>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-3">Built for Clearer Health Conversations</h2>
+                            <p className="text-muted-foreground text-base font-light">A focused assistant for everyday health questions and explainable chest X-ray interpretation.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div className="text-center p-6 rounded-xl border border-primary/20 bg-muted/20 hover:border-primary/30 transition-colors duration-300">
                                 <div className="text-4xl font-bold text-primary mb-2">95.13%</div>
-                                <div className="text-sm text-muted-foreground font-medium">Validation Accuracy</div>
+                                <div className="text-sm text-muted-foreground font-medium">Research Validation Accuracy</div>
                             </div>
                             <div className="text-center p-6 rounded-xl border border-primary/20 bg-muted/20 hover:border-primary/30 transition-colors duration-300">
                                 <div className="text-4xl font-bold text-medical mb-2">ResNet-152</div>
-                                <div className="text-sm text-muted-foreground font-medium">Deep Learning Model</div>
+                                <div className="text-sm text-muted-foreground font-medium">Pneumonia Screening Model</div>
                             </div>
                             <div className="text-center p-6 rounded-xl border border-primary/20 bg-muted/20 hover:border-primary/30 transition-colors duration-300">
                                 <div className="text-4xl font-bold text-warning mb-2">Grad-CAM</div>
-                                <div className="text-sm text-muted-foreground font-medium">Visualization Method</div>
+                                <div className="text-sm text-muted-foreground font-medium">Hotspot Explainability</div>
                             </div>
                             <div className="text-center p-6 rounded-xl border border-primary/20 bg-muted/20 hover:border-primary/30 transition-colors duration-300">
                                 <div className="text-4xl font-bold text-primary mb-2">GenAI</div>
-                                <div className="text-sm text-muted-foreground font-medium">Explainable Results</div>
+                                <div className="text-sm text-muted-foreground font-medium">Plain-Language Answers</div>
                             </div>
                         </div>
                     </div>
@@ -301,24 +321,24 @@ const HeroHeader = () => {
                                     variant="outline"
                                     size="sm"
                                     className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href="#">
-                                        <span>Login</span>
+                                    <Link href="#features">
+                                        <span>Features</span>
                                     </Link>
                                 </Button>
                                 <Button
                                     asChild
                                     size="sm"
                                     className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href="#">
-                                        <span>Sign Up</span>
+                                    <Link href="/chat">
+                                        <span>Ask AI</span>
                                     </Link>
                                 </Button>
                                 <Button
                                     asChild
                                     size="sm"
                                     className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
-                                    <Link href="#">
-                                        <span>Get Started</span>
+                                    <Link href="/chat">
+                                        <span>Ask AI</span>
                                     </Link>
                                 </Button>
                             </div>
@@ -359,4 +379,3 @@ const Logo = ({ className }: { className?: string }) => {
         </div>
     )
 }
-
