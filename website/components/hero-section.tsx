@@ -336,7 +336,7 @@ const HeroHeader = () => {
                                 <Button
                                     asChild
                                     size="sm"
-                                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
+                                    className={cn('hidden', isScrolled && 'lg:inline-flex')}>
                                     <Link href="/chat">
                                         <span>Ask AI</span>
                                     </Link>
